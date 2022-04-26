@@ -1,0 +1,7 @@
+Here are the necessary libraries and some usefull commands
+
+conda create --name alkemy
+
+conda env list
+
+conda activate alkemy
