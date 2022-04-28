@@ -5,3 +5,14 @@ conda create --name alkemy
 conda env list
 
 conda activate alkemy
+
+-----------
+Libraries 
+
+pandas
+
+python-decouple
+
+psycopg2
+
+sqlalchemy
