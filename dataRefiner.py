@@ -26,6 +26,7 @@ CURRENT_DATE = datetime.datetime.now().strftime("%d-%m-%Y")
 
 def directoryLister(rootdir=DATASETS_ROOT_DIR):
     # Acá simplemente armamos una lista con todas las direcciones enteras de nuestros archivos csv
+    # Asegurándonos de solo obtener lo mas actual (en torno a su fecha de descarga desde la página) de cada dataset
     # Decidí armarlo en una función por si a la hora de utilizarlo se quisiera cambiar la dirección raíz
     # Para cambiarla se debe modificar DATASET_ROOT_DIR en .env
 
