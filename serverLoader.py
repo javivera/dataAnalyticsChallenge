@@ -26,7 +26,7 @@ def createTables():
         cur.close()
         
         print('Tablas creadas exitosamente')
-        
+
     except:
         print('Hubo un problema al crear las tablas')
 
@@ -34,7 +34,6 @@ def updateTablesCine(df):
     try:
         conn = psycopg2.connect(database = DBNAME, user = USERNAME, password = PASSWORD, host = HOST, port = PORT)
         cur = conn.cursor()
-
 
         for j in range(len(df)):
             provincia_column = df.iloc[j][0]
@@ -44,7 +43,8 @@ def updateTablesCine(df):
             fecha_carga_column = df.iloc[j][4]
 
             cur.execute("INSERT INTO cines(provincia,butacas,pantallas,espacio_incaa,fecha_de_carga) \
-                        VALUES ('{}',{},{},{},'{}');".format(provincia_column,butacas_column,pantallas_column,espacios_column,fecha_carga_column))
+                        VALUES ('{}',{},{},{},'{}');".format(provincia_column,butacas_column,
+                        pantallas_column,espacios_column,fecha_carga_column))
 
 
         conn.commit() 
