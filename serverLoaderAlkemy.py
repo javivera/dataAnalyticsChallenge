@@ -15,7 +15,7 @@ def serverConn():
 
         logging.debug('La conexión al servidor fue exitosa')
         logging.debug(server_engine)
-    except:
+    except Exception as e:
         logging.debug('Hubo un problema al conectar con el servidor')
         logging.debug(SystemExit(e))
         raise 

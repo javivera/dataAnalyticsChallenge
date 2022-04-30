@@ -13,11 +13,9 @@ logging.basicConfig(filename='test.log', level=logging.DEBUG, force=True,
 
 def main():
     dataGatherer()
-
     if LOADERALT:
         logging.debug('Utilizando server loader sin SQLAlchemy')
         serverPipeline()
-
     else:
         cleanAndUploadPipelineAlkemy()
 
