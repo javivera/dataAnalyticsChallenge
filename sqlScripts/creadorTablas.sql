@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS datos_museos;
 DROP TABLE IF EXISTS datos_bibliotecas;
 DROP TABLE IF EXISTS cines;
 DROP TABLE IF EXISTS datos_conjuntos;
-CREATE TABLE IF NOT EXISTS public.datos_conjuntos (provincia varchar, categorias varchar,cantidad integer,fecha_de_carga varchar);
+CREATE TABLE IF NOT EXISTS public.datos_general (provincia varchar, categorias varchar,cantidad integer,fecha_de_carga varchar);
 CREATE TABLE IF NOT EXISTS public.cines (provincia varchar, butacas integer, pantallas integer, espacio_incaa varchar,fecha_de_carga varchar);
 CREATE TABLE IF NOT EXISTS public.datos_cines (cod_localidad integer, id_provincia integer, id_departamento integer,categoria varchar, provincia varchar, localidad varchar, nombre varchar, domicilio varchar, codigo_postal varchar, numero_de_telefono varchar, mail varchar, web varchar, fecha_de_carga varchar);
 CREATE TABLE IF NOT EXISTS public.datos_museos (cod_localidad integer, id_provincia integer, id_departamento integer,categoria varchar, provincia varchar, localidad varchar, nombre varchar, domicilio varchar, codigo_postal varchar, numero_de_telefono varchar, mail varchar, web varchar, fecha_de_carga varchar);

@@ -1,10 +1,11 @@
+import psycopg2
 from sqlalchemy import table
-from decouple import config 
+from decouple import config
 from decouple import AutoConfig
 import os
+import logging
 
 config = AutoConfig(search_path=os.getcwd())
-import psycopg2 
 
 USERNAME = config('USERNAME')
 HOST = config('HOST')
@@ -12,27 +13,31 @@ PORT = config('PORT')
 PASSWORD = config('PASSWORD')
 DBNAME = config('DBNAME')
 
+
 def createTables():
     try:
-        conn = psycopg2.connect(database = DBNAME, user = USERNAME, password = PASSWORD, host = HOST, port = PORT)
+        conn = psycopg2.connect(
+            database=DBNAME, user=USERNAME, password=PASSWORD, host=HOST, port=PORT)
         cur = conn.cursor()
 
         with open('sqlScripts/creadorTablas.sql') as f:
             for line in f:
                 cur.execute(line)
 
-        conn.commit() 
+        conn.commit()
         conn.close()
         cur.close()
-        
-        print('Tablas creadas exitosamente')
+
+        logging.debug('Tablas creadas exitosamente')
 
     except:
-        print('Hubo un problema al crear las tablas')
+        logging.debug('Hubo un problema al crear las tablas')
+
 
 def updateTablesCine(df):
     try:
-        conn = psycopg2.connect(database = DBNAME, user = USERNAME, password = PASSWORD, host = HOST, port = PORT)
+        conn = psycopg2.connect(
+            database=DBNAME, user=USERNAME, password=PASSWORD, host=HOST, port=PORT)
         cur = conn.cursor()
 
         for j in range(len(df)):
@@ -43,23 +48,24 @@ def updateTablesCine(df):
             fecha_carga_column = df.iloc[j][4]
 
             cur.execute("INSERT INTO cines(provincia,butacas,pantallas,espacio_incaa,fecha_de_carga) \
-                        VALUES ('{}',{},{},{},'{}');".format(provincia_column,butacas_column,
-                        pantallas_column,espacios_column,fecha_carga_column))
+                        VALUES ('{}',{},{},{},'{}');".format(provincia_column, butacas_column,
+                        pantallas_column, espacios_column, fecha_carga_column))
 
+        conn.commit()
 
-        conn.commit() 
-        
         conn.close()
         cur.close()
-        print('Cines fue subido con éxito')
+        logging.debug('Cines fue subido con éxito')
     except:
-        print('Hubo algún problema con la tabla Cines')
+        logging.debug('Hubo algún problema con la tabla Cines')
         pass
 
-def updateTableDatos(df1,table_name):
-    
+
+def updateTableDatos(df1, table_name):
+
     try:
-        conn = psycopg2.connect(database = DBNAME, user = USERNAME, password = PASSWORD, host = HOST, port = PORT)
+        conn = psycopg2.connect(
+            database=DBNAME, user=USERNAME, password=PASSWORD, host=HOST, port=PORT)
         cur = conn.cursor()
 
         for j in range(len(df1)):
@@ -79,43 +85,43 @@ def updateTableDatos(df1,table_name):
 
             cur.execute("INSERT INTO {}(cod_localidad, id_provincia, id_departamento, categoria, provincia, localidad, \
                                 nombre,domicilio, codigo_postal, numero_de_telefono, mail ,web,fecha_de_carga) VALUES ({},{},{},'{}','{}','{}','{}','{}','{}','{}','{}','{}','{}');"
-                                .format(
-                                    table_name,cod_localidad,id_provincia,id_departamento,categoria,provincia,str(localidad),nombre,domicilio,
-                                    codigo_postal,numero_de_telefono,mail,web,fecha_carga_column)
-                                )
-                                
-        conn.commit() 
+                        .format(
+                            table_name, cod_localidad, id_provincia, id_departamento, categoria, provincia, str(
+                                localidad), nombre, domicilio,
+                            codigo_postal, numero_de_telefono, mail, web, fecha_carga_column)
+                        )
+
+        conn.commit()
         conn.close()
         cur.close()
-        print('{} fue subido con éxito'.format(table_name))
+        logging.debug('{} fue subido con éxito'.format(table_name))
 
     except:
-        print('Hubo algún problema con {}'.format(table_name))
+        logging.debug('Hubo algún problema con {}'.format(table_name))
         pass
+
 
 def updateTablesDatosConjuntos(df):
     try:
-        conn = psycopg2.connect(database = DBNAME, user = USERNAME, password = PASSWORD, host = HOST, port = PORT)
+        conn = psycopg2.connect(
+            database=DBNAME, user=USERNAME, password=PASSWORD, host=HOST, port=PORT)
         cur = conn.cursor()
-
 
         for j in range(len(df)):
             provincia_column = df.iloc[j][0]
             categorias_column = df.iloc[j][1]
             cantidad_column = df.iloc[j][2]
             fecha_carga_column = df.iloc[j][3]
-            
 
             cur.execute("INSERT INTO datos_conjuntos (provincia,categorias,cantidad,fecha_de_carga) \
-                        VALUES ('{}','{}',{},'{}');".format(provincia_column,categorias_column,cantidad_column,fecha_carga_column))
+                        VALUES ('{}','{}',{},'{}');".format(provincia_column, categorias_column, cantidad_column, fecha_carga_column))
 
-
-        conn.commit() 
+        conn.commit()
 
         conn.close()
         cur.close()
-        print('Datos Conjuntos fue subido con éxito')
+        logging.debug('Datos Conjuntos fue subido con éxito')
 
     except:
-        print('Hubo algún problema con datos conjuntos')
+        logging.debug('Hubo algún problema con datos conjuntos')
         pass
