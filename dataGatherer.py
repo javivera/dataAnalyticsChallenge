@@ -131,5 +131,6 @@ def dataGatherer():
         retrieve_and_save(web3, 'bibliotecas-populares')
         logging.debug("Los datos fueron recolectados con éxito")
 
-    except:
+    except Exception as e:
         logging.debug("Hubo un problema en la recolección de datos")
+        logging.debug(SystemExit(e))

@@ -158,6 +158,15 @@ def cinesCleaner(df):
     return df
 
 
+def datosConjuntosCleaner(data_df):
+    data_df = data_df[['provincia', 'categoria', 'fecha_de_carga']]
+    data_df = data_df.groupby(
+        ['provincia', 'categoria'], as_index=False).value_counts()
+    data_df = data_df[['provincia', 'categoria', 'count', 'fecha_de_carga']]
+
+# -------------------------------- Comienzo de Pipelines --------------------------------
+
+
 def dataPipeline():
     # Este pipeline, prepara los tres datasets limpiando las columnas no requeridas, basado en la primera consigna
 
@@ -196,10 +205,7 @@ def datosConjuntosPipeline(df_list):
     # por que deja ver museos, cines y bibliotecas en cada provincia
 
     data_df = pd.concat(df_list)
-    data_df = data_df[['provincia', 'categoria', 'fecha_de_carga']]
-    data_df = data_df.groupby(
-        ['provincia', 'categoria'], as_index=False).value_counts()
-    data_df = data_df[['provincia', 'categoria', 'count', 'fecha_de_carga']]
+    datosConjuntosCleaner(data_df)
 
     return data_df
 
@@ -230,22 +236,27 @@ def cleanAndUploadPipelineAlkemy():
     # Esta seccíon es la que se encarga de crear tablas, ejecutra los pipelines, para crear y limpiar los dataframes
     # y luego de subir todo al servidor
 
-    cines_df = cinesPipeline()
-    df_list = dataPipeline()
-    data_df = datosConjuntosPipeline(df_list)
+    try:
+        cines_df = cinesPipeline()
+        df_list = dataPipeline()
+        data_df = datosConjuntosPipeline(df_list)
+    except Exception as e:
+        logging.debug('Algún pipeline de limpieza de datos falló')
+        logging.debug(e)
+    # Este try except podría haber ido en cada pipeline por separado, pero dado la índole de este proyecto me parece excesivo
+
     server_engine = serverLoaderAlkemy.serverConn()
 
     serverLoaderAlkemy.createTables(server_engine)
 
     serverLoaderAlkemy.serverLoad(cines_df, 'cines', server_engine)
-
     serverLoaderAlkemy.serverLoad(
         df_list[0], 'datos_bibliotecas', server_engine)
     serverLoaderAlkemy.serverLoad(df_list[1], 'datos_museos', server_engine)
-
-    # Borro las ultimas dos filas, por que hay problema al solicitar info desde la web del gobierno
+    # Borro las ultimas dos filas del dataset de museos, por que hay problema al solicitar info desde la web del gobierno
     # Mi suposicion es que es un bug en el iterador del request.get, para chequear el problema deje un modo
-    # debug en el dataGatherer, se puede activar cambiando la variable DEBUG el .env
+    # debug en el dataGatherer, se puede activar cambiando la variable DEBUG el .env y ver que las últimas dos filas
+    # recibidas, deberian ser en realidad una
     df_list[2] = df_list[2].drop(df_list[2].tail(2).index)
     serverLoaderAlkemy.serverLoad(df_list[2], 'datos_cines', server_engine)
     serverLoaderAlkemy.serverLoad(data_df, 'datos_general', server_engine)
